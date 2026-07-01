@@ -1,0 +1,78 @@
+@model FileShareService.Models.FileRecord
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>FileRecord</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Code" class="control-label"></label>
+                <input asp-for="Code" class="form-control" />
+                <span asp-validation-for="Code" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="OriginalFileName" class="control-label"></label>
+                <input asp-for="OriginalFileName" class="form-control" />
+                <span asp-validation-for="OriginalFileName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MimeType" class="control-label"></label>
+                <input asp-for="MimeType" class="form-control" />
+                <span asp-validation-for="MimeType" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SizeBytes" class="control-label"></label>
+                <input asp-for="SizeBytes" class="form-control" />
+                <span asp-validation-for="SizeBytes" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StoragePath" class="control-label"></label>
+                <input asp-for="StoragePath" class="form-control" />
+                <span asp-validation-for="StoragePath" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DownloadCount" class="control-label"></label>
+                <input asp-for="DownloadCount" class="form-control" />
+                <span asp-validation-for="DownloadCount" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MaxDownloads" class="control-label"></label>
+                <input asp-for="MaxDownloads" class="form-control" />
+                <span asp-validation-for="MaxDownloads" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ExpiresAt" class="control-label"></label>
+                <input asp-for="ExpiresAt" class="form-control" />
+                <span asp-validation-for="ExpiresAt" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CreatedAt" class="control-label"></label>
+                <input asp-for="CreatedAt" class="form-control" />
+                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

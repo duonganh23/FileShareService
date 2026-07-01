@@ -1,0 +1,83 @@
+@model IEnumerable<FileShareService.Models.FileRecord>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Code)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OriginalFileName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MimeType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SizeBytes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StoragePath)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DownloadCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaxDownloads)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExpiresAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.OriginalFileName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.MimeType)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.SizeBytes)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.StoragePath)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.DownloadCount)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.MaxDownloads)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ExpiresAt)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.CreatedAt)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
