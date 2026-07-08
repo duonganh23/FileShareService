@@ -20,10 +20,18 @@ namespace FileShareService.Controllers
 
         // POST api/files — upload a file
         [HttpPost]
-        public async Task<IActionResult> Upload(IFormFile file, int maxDownloads = 0, DateTime? expiresAt = null)
+        public async Task<IActionResult> Upload(IFormFile file, int maxDownloads = 0, string? expiresAt = null)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file provided.");
+
+            DateTime? parsedExpiry = null;
+            if (!string.IsNullOrEmpty(expiresAt))
+            {
+                if (!DateTime.TryParse(expiresAt, out var dt))
+                    return BadRequest("Invalid expiresAt date format.");
+                parsedExpiry = dt.ToUniversalTime();
+            }
 
             var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
             Directory.CreateDirectory(uploadsFolder);
@@ -45,7 +53,7 @@ namespace FileShareService.Controllers
                 StoragePath = storagePath,
                 DownloadCount = 0,
                 MaxDownloads = maxDownloads,
-                ExpiresAt = expiresAt,
+                ExpiresAt = parsedExpiry,
                 CreatedAt = DateTime.UtcNow
             };
 
