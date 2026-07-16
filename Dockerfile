@@ -27,4 +27,10 @@ RUN dotnet publish "./FileShareService.csproj" -c $BUILD_CONFIGURATION -o /app/p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Create uploads folder and grant write permission
+USER root
+RUN mkdir -p /app/wwwroot/uploads && chmod 777 /app/wwwroot/uploads
+
+USER $APP_UID
 ENTRYPOINT ["dotnet", "FileShareService.dll"]
