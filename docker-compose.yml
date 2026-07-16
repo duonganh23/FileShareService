@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # 1. The Database
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=SuperSecretPass123! # Ensure this matches your backend connection string
+    ports:
+      - "1433:1433"
+
+  # 2. The Backend API
+  api:
+    build: 
+      context: ./FileShareService # Tells Docker to look in the backend folder for the Dockerfile
+    ports:
+      - "5000:8080" # Maps your PC's port 5000 to the container's port 8080
+    environment:
+      # This tells the API to connect to the "db" container above
+      - ConnectionStrings__DefaultConnection=Server=db;Database=FileShareDb;User Id=sa;Password=SuperSecretPass123!;TrustServerCertificate=True;
+    depends_on:
+      - db
+
+  # 3. The Frontend SPA
+  web:
+    build: 
+      context: ./file-share-frontend
+    ports:
+      - "8080:80" # Maps your PC's port 8080 to the Nginx port 80
+    depends_on:
+      - api
