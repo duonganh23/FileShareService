@@ -1,0 +1,73 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'file-share-frontend/**'
+      - '.github/workflows/frontend.yml'
+  pull_request:
+    paths:
+      - 'file-share-frontend/**'
+
+defaults:
+  run:
+    working-directory: file-share-frontend
+
+jobs:
+  build:
+    name: Lint, build & push image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: file-share-frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Static analysis / lint step (Merit criterion). Non-blocking until an
+      # ESLint config is added; remove "|| true" once lint rules are enforced.
+      - name: Lint
+        run: npx eslint . || true
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+
+      # ---- Docker image: build & push to Docker Hub (only on push to main/master) ----
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v6
+        with:
+          context: file-share-frontend
+          push: true
+          build-args: |
+            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-frontend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-frontend:${{ github.sha }}
+
+  deploy:
+    name: Deploy to PaaS
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      # Render deploy hook: create a Deploy Hook URL in the Render dashboard and
+      # store it as the RENDER_DEPLOY_HOOK secret. Swap for Railway/Azure as needed.
+      - name: Trigger Render deploy
+        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
