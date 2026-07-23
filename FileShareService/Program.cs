@@ -28,18 +28,16 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseHttpsRedirection();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-<<<<<<< HEAD
 app.UseHttpsRedirection();
 app.UseCors(FrontendCorsPolicy);
-=======
-app.UseSwagger();
-app.UseSwaggerUI();
 app.UseAuthorization();
 app.MapControllers();
 app.UseStaticFiles();
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -59,4 +57,5 @@ using (var scope = app.Services.CreateScope())
         }
     }
 }
+
 app.Run();
