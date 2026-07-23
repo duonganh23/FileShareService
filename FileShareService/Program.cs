@@ -30,6 +30,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
+<<<<<<< HEAD
+app.UseHttpsRedirection();
+app.UseCors(FrontendCorsPolicy);
+=======
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthorization();
