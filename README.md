@@ -14,7 +14,7 @@ A modern, end-to-end encrypted file sharing service built with **ASP.NET Core**,
 
 ## 🎯 Features & Grading Criteria
 
-### ✅ Core Functionality (Pass)
+### ✅ Core Functionality 
 - **Drag-and-drop upload** with fallback file picker.
 - **10 MB file size limit** enforced client-side.
 - **Short unique share codes** (8-char hex, e.g., `/f/a1b2c3d4`).
@@ -26,7 +26,7 @@ A modern, end-to-end encrypted file sharing service built with **ASP.NET Core**,
 - **RESTful API**: proper HTTP status codes (200, 404, 410 Gone for expired).
 - **Responsive design**: fully functional on mobile, tablet, and desktop.
 
-### 🌟 Advanced Features (Merit & Distinction)
+### 🌟 Advanced Features 
 - **Real-time upload progress bar**: animated 0–100% during file transfer.
 - **Multi-stage Docker build**: optimized `node:alpine` → `nginx:alpine` frontend image.
 - **Automated CI/CD**: GitHub Actions automatically lints, builds, and pushes to Docker Hub on every push to `master`.
