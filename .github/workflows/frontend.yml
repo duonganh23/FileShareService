@@ -10,14 +10,13 @@ on:
     paths:
       - 'file-share-frontend/**'
 
-defaults:
-  run:
-    working-directory: file-share-frontend
-
 jobs:
   build:
     name: Lint, build & push image
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: file-share-frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -67,7 +66,5 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      # Render deploy hook: create a Deploy Hook URL in the Render dashboard and
-      # store it as the RENDER_DEPLOY_HOOK secret. Swap for Railway/Azure as needed.
       - name: Trigger Render deploy
-        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}"
