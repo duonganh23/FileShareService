@@ -2,13 +2,12 @@ node_modules
 dist
 .git
 .env
-.env.*
-!.env.example
+.env.local
+.env.development
 *.log
 .vscode
 **/.classpath
 **/.dockerignore
-**/.env
 **/.git
 **/.gitignore
 **/.project

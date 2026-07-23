@@ -1,18 +1,10 @@
 import axios from 'axios'
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5238/api'
+const baseURL = import.meta.env.VITE_API_BASE_URL || '/api'
 
 const http = axios.create({ baseURL })
 
-/**
- * Thin wrapper around the FilesController REST API.
- * Backend contract (see FileShareService/Controllers/FilesController.cs):
- *   POST   /files                -> upload (multipart: file, maxDownloads, expiresAt)
- *   GET    /files                -> list all files
- *   GET    /files/{code}/info    -> metadata (404 not found, 410 expired/limit)
- *   GET    /files/{code}         -> download binary stream
- *   DELETE /files/{code}         -> delete (204)
- */
+
 export const filesApi = {
   /**
    * Upload a single file.
