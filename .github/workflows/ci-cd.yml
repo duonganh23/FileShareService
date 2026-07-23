@@ -65,12 +65,12 @@ jobs:
 
   # 3. PASS REQUIREMENT: Automated Deployment
 # 3. PASS REQUIREMENT: Automated Deployment
-deploy:
-  needs: build-and-push 
-  runs-on: ubuntu-latest
-  steps:
-    - name: Trigger Backend Render Deployment
-      run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_BACKEND }}"
+  deploy:
+    needs: build-and-push 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Backend Render Deployment
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_BACKEND }}"
 
-    - name: Trigger Frontend Render Deployment
-      run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}"
+      - name: Trigger Frontend Render Deployment
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}"
