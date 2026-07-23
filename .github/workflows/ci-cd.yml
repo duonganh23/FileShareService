@@ -64,10 +64,13 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-web:latest
 
   # 3. PASS REQUIREMENT: Automated Deployment
-  deploy:
-    needs: build-and-push # Ensures we only deploy if the new images were pushed successfully
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Render Deployment
-        # Sends a web request to Render to pull the latest image and deploy
-        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+# 3. PASS REQUIREMENT: Automated Deployment
+deploy:
+  needs: build-and-push 
+  runs-on: ubuntu-latest
+  steps:
+    - name: Trigger Backend Render Deployment
+      run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_BACKEND }}"
+
+    - name: Trigger Frontend Render Deployment
+      run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}"
