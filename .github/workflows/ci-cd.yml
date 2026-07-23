@@ -50,15 +50,16 @@ jobs:
       - name: Build and push Backend Image
         uses: docker/build-push-action@v4
         with:
-          context: ./FileShareService
+          context: .          # Root directory context for the backend Dockerfile[cite: 3]
+          file: ./Dockerfile  # Points explicitly to the root Dockerfile[cite: 3]
           push: true
-          # Dynamically uses your Docker username secret
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-api:latest 
 
       - name: Build and push Frontend Image
         uses: docker/build-push-action@v4
         with:
           context: ./file-share-frontend
+          file: ./file-share-frontend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-web:latest
 
