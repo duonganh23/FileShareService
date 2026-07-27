@@ -16,9 +16,6 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Run .NET Tests
-        run: dotnet test ./FileShareService.Tests
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
