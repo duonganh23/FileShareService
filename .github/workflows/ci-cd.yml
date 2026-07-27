@@ -74,6 +74,6 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Deploy Frontend to Railway
-        run: railway up --service web-1 --detach
+        run: railway up --service diplomatic-gentleness --detach
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
