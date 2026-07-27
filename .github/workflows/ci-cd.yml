@@ -66,11 +66,21 @@ jobs:
   # 3. PASS REQUIREMENT: Automated Deployment
 # 3. PASS REQUIREMENT: Automated Deployment
   deploy:
-    needs: build-and-push 
+    needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Backend Render Deployment
-        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_BACKEND }}"
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-      - name: Trigger Frontend Render Deployment
-        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}"
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        run: railway up --service apicoursework.up.railway.app --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Deploy Frontend to Railway
+        run: railway up --service web1.up.railway.app --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
