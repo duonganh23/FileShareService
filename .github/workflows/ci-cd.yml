@@ -71,7 +71,7 @@ jobs:
       - name: Deploy Backend to Railway
         run: railway up --service just-endurance --detach
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Deploy Frontend to Railway
         run: railway up --service web-1 --detach
