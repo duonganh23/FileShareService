@@ -2,10 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "master" ] # Triggers when code is pushed to master
+    branches: [ "main" ]
 
 jobs:
-  # 1. MERIT REQUIREMENT: Linting and Testing
   lint-and-test:
     runs-on: ubuntu-latest
     steps:
@@ -15,15 +14,15 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x' # Adjust to match your project's version
+          dotnet-version: '8.0.x'
 
       - name: Run .NET Tests
-        run: dotnet test ./FileShareService
+        run: dotnet test ./FileShareService.Tests
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18' # Adjust to match your Vue setup
+          node-version: '22'
 
       - name: Install Frontend Dependencies
         working-directory: ./file-share-frontend
@@ -33,9 +32,8 @@ jobs:
         working-directory: ./file-share-frontend
         run: npm run lint --if-present
 
-  # 2. PASS REQUIREMENT: Build and Push Docker Images
   build-and-push:
-    needs: lint-and-test # This ensures Docker images only build if tests pass
+    needs: lint-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -50,10 +48,10 @@ jobs:
       - name: Build and push Backend Image
         uses: docker/build-push-action@v4
         with:
-          context: .          # Root directory context for the backend Dockerfile[cite: 3]
-          file: ./Dockerfile  # Points explicitly to the root Dockerfile[cite: 3]
+          context: .
+          file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-api:latest 
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-api:latest
 
       - name: Build and push Frontend Image
         uses: docker/build-push-action@v4
@@ -63,8 +61,6 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-web:latest
 
-  # 3. PASS REQUIREMENT: Automated Deployment
-# 3. PASS REQUIREMENT: Automated Deployment
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -75,12 +71,12 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Deploy to Railway
-        run: railway up --service apicoursework.up.railway.app --detach
+      - name: Deploy Backend to Railway
+        run: railway up --service just-endurance --detach
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Deploy Frontend to Railway
-        run: railway up --service web1.up.railway.app --detach
+        run: railway up --service web-1 --detach
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
