@@ -1,78 +1,90 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { filesApi } from '@/api/files'
-import { removeFromHistory } from '@/utils/history'
-import PasswordModal from '@/components/PasswordModal.vue'
+    import { ref, computed, onMounted } from 'vue'
+    import { useRoute, useRouter } from 'vue-router'
+    import { filesApi } from '@/api/files'
+    import { removeFromHistory } from '@/utils/history'
+    import PasswordModal from '@/components/PasswordModal.vue'
 
-const route = useRoute()
-const router = useRouter()
-const code = route.params.code
+    const route = useRoute()
+    const router = useRouter()
+    const code = route.params.code
 
-const loading = ref(true)
-const meta = ref(null)
-const errorStatus = ref(null) // 404 | 410 | other
-const errorMessage = ref('')
-const needsPassword = ref(false) // Distinction: shown on HTTP 401
+    const loading = ref(true)
+    const meta = ref(null)
+    const errorStatus = ref(null) // 404 | 410 | other
+    const errorMessage = ref('')
+    const needsPassword = ref(false) // Distinction: shown on HTTP 401
+    const enteredPassword = ref(null)
 
-const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
-const downloadUrl = computed(() => filesApi.downloadUrl(code))
-const downloadsRemaining = computed(() => {
-  if (!meta.value || meta.value.maxDownloads === 0) return null
-  return meta.value.maxDownloads - meta.value.downloadCount
-})
-const isLimitWarning = computed(() => downloadsRemaining.value !== null && downloadsRemaining.value <= 1)
-const isExpiringSoon = computed(() => {
-  if (!meta.value?.expiresAt) return false
-  const now = Date.now()
-  const expires = new Date(meta.value.expiresAt).getTime()
-  const minutesLeft = (expires - now) / 60000
-  return minutesLeft > 0 && minutesLeft < 60 // Within 1 hour
-})
+    const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
+    const downloadUrl = computed(() => filesApi.downloadUrl(code, enteredPassword.value))
+    const downloadsRemaining = computed(() => {
+        if (!meta.value || meta.value.maxDownloads === 0) return null
+        return meta.value.maxDownloads - meta.value.downloadCount
+    })
+    const isLimitWarning = computed(() => downloadsRemaining.value !== null && downloadsRemaining.value <= 1)
+    const isExpiringSoon = computed(() => {
+        if (!meta.value?.expiresAt) return false
+        const now = Date.now()
+        const expires = new Date(meta.value.expiresAt).getTime()
+        const minutesLeft = (expires - now) / 60000
+        return minutesLeft > 0 && minutesLeft < 60 // Within 1 hour
+    })
 
-async function load() {
-  loading.value = true
-  errorStatus.value = null
-  try {
-    meta.value = await filesApi.getInfo(code)
-  } catch (e) {
-    const status = e?.response?.status
-    if (status === 401) {
-      needsPassword.value = true
-    } else {
-      errorStatus.value = status || 'error'
-      errorMessage.value =
-        e?.response?.data ||
-        (status === 404
-          ? 'File not found.'
-          : status === 410
-            ? 'This link has expired or reached its download limit.'
-            : 'Unable to load this file.')
+    async function load() {
+        loading.value = true
+        errorStatus.value = null
+        try {
+            meta.value = await filesApi.getInfo(code)
+        } catch (e) {
+            const status = e?.response?.status
+            if (status === 401) {
+                needsPassword.value = true
+            } else {
+                errorStatus.value = status || 'error'
+                errorMessage.value =
+                    e?.response?.data ||
+                    (status === 404
+                        ? 'File not found.'
+                        : status === 410
+                            ? 'This link has expired or reached its download limit.'
+                            : 'Unable to load this file.')
+            }
+        } finally {
+            loading.value = false
+        }
     }
-  } finally {
-    loading.value = false
-  }
-}
 
-function onPasswordSubmit() {
-  // Backend password gate not yet implemented — placeholder for the Distinction flow.
-  errorMessage.value = 'Password verification is not available (backend support pending).'
-}
+    async function onPasswordSubmit(password) {
+        try {
+            meta.value = await filesApi.getInfo(code, password)
+            needsPassword.value = false
+            enteredPassword.value = password
+        } catch (e) {
+            errorMessage.value = e?.response?.status === 401
+                ? 'Incorrect password.'
+                : 'Unable to verify password.'
+        }
+    }
 
-async function remove() {
-  if (!confirm('Delete this file permanently?')) return
-  await filesApi.remove(code)
-  removeFromHistory(code)
-  router.push('/history')
-}
+    async function remove() {
+        if (!confirm('Delete this file permanently?')) return
+        try {
+            await filesApi.remove(code)
+            removeFromHistory(code)
+            router.push('/history')
+        } catch (e) {
+            alert('Failed to delete file. Please try again.')
+        }
+    }
 
-function humanSize(bytes) {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
+    function humanSize(bytes) {
+        if (bytes < 1024) return `${bytes} B`
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+    }
 
-onMounted(load)
+    onMounted(load)
 </script>
 
 <template>

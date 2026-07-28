@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using FileShareService.Data;
 using FileShareService.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace FileShareService.Controllers
 {
@@ -17,14 +18,13 @@ namespace FileShareService.Controllers
             _context = context;
             _environment = environment;
         }
-
+        private readonly PasswordHasher<FileRecord> _passwordHasher = new();
         // POST api/files — upload a file
         [HttpPost]
-        public async Task<IActionResult> Upload(IFormFile file, int maxDownloads = 0, string? expiresAt = null)
+        public async Task<IActionResult> Upload(IFormFile file, int maxDownloads = 0, string? expiresAt = null, string? password = null)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file provided.");
-
             DateTime? parsedExpiry = null;
             if (!string.IsNullOrEmpty(expiresAt))
             {
@@ -32,13 +32,10 @@ namespace FileShareService.Controllers
                     return BadRequest("Invalid expiresAt date format.");
                 parsedExpiry = dt.ToUniversalTime();
             }
-
             var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
             Directory.CreateDirectory(uploadsFolder);
-
             var storedFileName = $"{Guid.NewGuid()}_{file.FileName}";
             var storagePath = Path.Combine(uploadsFolder, storedFileName);
-
             using (var stream = new FileStream(storagePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
@@ -56,7 +53,10 @@ namespace FileShareService.Controllers
                 ExpiresAt = parsedExpiry,
                 CreatedAt = DateTime.UtcNow
             };
-
+            if (!string.IsNullOrEmpty(password))
+            {
+                record.PasswordHash = _passwordHasher.HashPassword(record, password);
+            }
             _context.Files.Add(record);
             await _context.SaveChangesAsync();
 
@@ -68,7 +68,8 @@ namespace FileShareService.Controllers
                 record.SizeBytes,
                 record.MaxDownloads,
                 record.ExpiresAt,
-                record.CreatedAt
+                record.CreatedAt,
+                HasPassword = record.PasswordHash != null
             });
         }
 
@@ -95,7 +96,7 @@ namespace FileShareService.Controllers
 
         // GET api/files/{code}/info — get metadata for a file
         [HttpGet("{code}/info")]
-        public async Task<IActionResult> GetInfo(string code)
+        public async Task<IActionResult> GetInfo(string code, [FromQuery] string? password = null)
         {
             var record = await _context.Files.FirstOrDefaultAsync(f => f.Code == code);
 
@@ -108,6 +109,15 @@ namespace FileShareService.Controllers
             if (record.MaxDownloads > 0 && record.DownloadCount >= record.MaxDownloads)
                 return Gone("Download limit reached.");
 
+            if (record.PasswordHash != null)
+            {
+                if (string.IsNullOrEmpty(password))
+                    return Unauthorized("Password required.");
+
+                var result = _passwordHasher.VerifyHashedPassword(record, record.PasswordHash, password);
+                if (result == PasswordVerificationResult.Failed)
+                    return Unauthorized("Incorrect password.");
+            }
             return Ok(new
             {
                 record.Code,
@@ -117,13 +127,14 @@ namespace FileShareService.Controllers
                 record.DownloadCount,
                 record.MaxDownloads,
                 record.ExpiresAt,
-                record.CreatedAt
+                record.CreatedAt,
+                HasPassword = record.PasswordHash != null
             });
         }
 
         // GET api/files/{code} — download a file
         [HttpGet("{code}")]
-        public async Task<IActionResult> Download(string code)
+        public async Task<IActionResult> Download(string code, [FromQuery] string? password = null)
         {
             var record = await _context.Files.FirstOrDefaultAsync(f => f.Code == code);
 
@@ -135,6 +146,16 @@ namespace FileShareService.Controllers
 
             if (record.MaxDownloads > 0 && record.DownloadCount >= record.MaxDownloads)
                 return Gone("Download limit reached.");
+
+            if (record.PasswordHash != null)
+            {
+                if (string.IsNullOrEmpty(password))
+                    return Unauthorized("Password required.");
+
+                var result = _passwordHasher.VerifyHashedPassword(record, record.PasswordHash, password);
+                if (result == PasswordVerificationResult.Failed)
+                    return Unauthorized("Incorrect password.");
+            }
 
             if (!System.IO.File.Exists(record.StoragePath))
                 return NotFound("File missing from storage.");

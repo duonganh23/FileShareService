@@ -14,5 +14,6 @@ namespace FileShareService.Models
         public int MaxDownloads { get; set; }
         public DateTime? ExpiresAt { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? PasswordHash { get; set; } // null = no password
     }
 }

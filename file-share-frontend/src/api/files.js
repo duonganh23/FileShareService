@@ -13,29 +13,31 @@ export const filesApi = {
    * @param {(evt: ProgressEvent) => void} [onUploadProgress] axios progress callback
    * @returns metadata: { code, originalFileName, mimeType, sizeBytes, maxDownloads, expiresAt, createdAt }
    */
-  async upload(file, { maxDownloads = 0, expiresAt = null } = {}, onUploadProgress) {
-    const form = new FormData()
-    form.append('file', file)
-    form.append('maxDownloads', String(maxDownloads))
-    if (expiresAt) form.append('expiresAt', expiresAt)
-
-    const { data } = await http.post('/files', form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      onUploadProgress,
-    })
-    return data
-  },
+   async upload(file, { maxDownloads = 0, expiresAt = null, password = null } = {}, onUploadProgress) {
+       const form = new FormData()
+       form.append('file', file)
+       form.append('maxDownloads', String(maxDownloads))
+       if (expiresAt) form.append('expiresAt', expiresAt)
+       if (password) form.append('password', password)
+       const { data } = await http.post('/files', form, {
+           headers: { 'Content-Type': 'multipart/form-data' },
+           onUploadProgress,
+       })
+       return data
+   },
 
   /** Fetch metadata for one file. Throws with response.status 404/410 on error. */
-  async getInfo(code) {
-    const { data } = await http.get(`/files/${code}/info`)
-    return data
-  },
+    async getInfo(code, password = null) {
+        const params = password ? { password } : {}
+        const { data } = await http.get(`/files/${code}/info`, { params })
+        return data
+    },
 
   /** Absolute URL of the raw download/preview stream (for <img src> or an <a> href). */
-  downloadUrl(code) {
-    return `${baseURL}/files/${code}`
-  },
+    downloadUrl(code, password = null) {
+        const url = `${baseURL}/files/${code}`
+        return password ? `${url}?password=${encodeURIComponent(password)}` : url
+    },
 
   /** Delete a file by code. */
   async remove(code) {
