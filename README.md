@@ -8,7 +8,7 @@
 
 A modern, end-to-end encrypted file sharing service built with **ASP.NET Core**, **Vue 3**, and **PostgreSQL**. Upload files, get a short shareable link, and set expiry/download limits. Anyone with the link can view images inline or download files — no account required.
 
-**Live demo:** [👉 ADD YOUR RENDER DEPLOYMENT URL HERE 👈]
+**Live demo:** https://web1.up.railway.app
 
 ---
 
@@ -30,8 +30,7 @@ A modern, end-to-end encrypted file sharing service built with **ASP.NET Core**,
 - **Real-time upload progress bar**: animated 0–100% during file transfer.
 - **Multi-stage Docker build**: optimized `node:alpine` → `nginx:alpine` frontend image.
 - **Automated CI/CD**: GitHub Actions automatically lints, builds, and pushes to Docker Hub on every push to `master`.
-- **Password-protected files (UI)**: modal prompts for passphrase *(Backend integration pending)*.
-- **Image thumbnails (UI)**: placeholder for server-generated thumbnails *(Backend integration pending)*.
+- **Password-protected files (UI)**: modal prompts for passphrase.
 
 ---
 
@@ -134,7 +133,7 @@ The `.github/workflows/ci-cd.yml` pipeline is triggered on every push to the `ma
 3. Packages both into multi-stage Docker containers.
 4. Pushes the images to Docker Hub.
 
-### Production Deployment (Render)
+### Production Deployment (Railway)
 1. **Database:** Provision a PostgreSQL instance.
 2. **Backend Web Service:** Deployed via Docker image. Requires the `ConnectionStrings__DefaultConnection` environment variable.
 3. **Frontend Static Site / Web Service:** Deployed via Docker image. Requires the `VITE_API_BASE_URL` environment variable pointing to the deployed backend.
