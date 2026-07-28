@@ -17,6 +17,18 @@ const needsPassword = ref(false) // Distinction: shown on HTTP 401
 
 const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
 const downloadUrl = computed(() => filesApi.downloadUrl(code))
+const downloadsRemaining = computed(() => {
+  if (!meta.value || meta.value.maxDownloads === 0) return null
+  return meta.value.maxDownloads - meta.value.downloadCount
+})
+const isLimitWarning = computed(() => downloadsRemaining.value !== null && downloadsRemaining.value <= 1)
+const isExpiringSoon = computed(() => {
+  if (!meta.value?.expiresAt) return false
+  const now = Date.now()
+  const expires = new Date(meta.value.expiresAt).getTime()
+  const minutesLeft = (expires - now) / 60000
+  return minutesLeft > 0 && minutesLeft < 60 // Within 1 hour
+})
 
 async function load() {
   loading.value = true
@@ -79,14 +91,32 @@ onMounted(load)
     </div>
 
     <div v-else-if="meta" class="card">
+      <!-- Warning banner: limit or expiry approaching -->
+      <div v-if="isLimitWarning" class="banner warning">
+        ⚠️ {{ downloadsRemaining }} download{{ downloadsRemaining !== 1 ? 's' : '' }} left before link expires!
+      </div>
+      <div v-if="isExpiringSoon" class="banner warning">
+        ⏰ This link expires soon. Download now before it expires.
+      </div>
+
       <h1 class="fname">{{ meta.originalFileName }}</h1>
       <p class="muted meta-line">
         {{ humanSize(meta.sizeBytes) }} · {{ meta.mimeType }}
-        <span v-if="meta.maxDownloads > 0">
-          · {{ meta.downloadCount }}/{{ meta.maxDownloads }} downloads
-        </span>
-        <span v-if="meta.expiresAt"> · expires {{ new Date(meta.expiresAt).toLocaleString() }}</span>
       </p>
+
+      <!-- Downloads remaining badge -->
+      <div v-if="meta.maxDownloads > 0" class="badge-row">
+        <span class="badge" :class="{ 'badge-warning': isLimitWarning }">
+          📥 {{ downloadsRemaining }} of {{ meta.maxDownloads }} downloads remaining
+        </span>
+      </div>
+
+      <!-- Expiry info -->
+      <div v-if="meta.expiresAt" class="badge-row">
+        <span class="badge">
+          ⏱️ Expires {{ new Date(meta.expiresAt).toLocaleString() }}
+        </span>
+      </div>
 
       <div v-if="isImage" class="preview">
         <img :src="downloadUrl" :alt="meta.originalFileName" />
@@ -105,6 +135,38 @@ onMounted(load)
 </template>
 
 <style scoped>
+.banner {
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  font-size: 14px;
+}
+.banner.warning {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+.badge-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.badge {
+  display: inline-block;
+  background: var(--bg);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+}
+.badge-warning {
+  background: #fef3c7;
+  border-color: #fcd34d;
+  color: #92400e;
+}
 .center {
   text-align: center;
 }
@@ -135,7 +197,7 @@ onMounted(load)
 .actions {
   display: flex;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 16px;
 }
 .actions .btn {
   text-decoration: none;

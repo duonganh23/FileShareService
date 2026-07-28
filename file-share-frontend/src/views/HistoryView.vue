@@ -52,9 +52,14 @@ function humanSize(bytes) {
           </span>
         </div>
         <div class="ops">
-          <code class="link">/f/{{ item.code }}</code>
-          <button class="btn btn-secondary sm" @click="copy(item.code)">
-            {{ copiedCode === item.code ? 'Copied' : 'Copy' }}
+          <button
+            class="link-copy"
+            :class="{ copied: copiedCode === item.code }"
+            @click="copy(item.code)"
+            :title="`Copy link to ${item.originalFileName}`"
+          >
+            <code>/f/{{ item.code }}</code>
+            <span class="copy-icon">{{ copiedCode === item.code ? '✓' : '📋' }}</span>
           </button>
           <button class="btn btn-danger sm" @click="remove(item.code)">Delete</button>
         </div>
@@ -95,11 +100,35 @@ function humanSize(bytes) {
   align-items: center;
   gap: 8px;
 }
-.link {
+.link-copy {
   background: var(--bg);
-  padding: 4px 8px;
-  border-radius: 6px;
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 8px;
   font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  font-family: monospace;
+}
+.link-copy:hover {
+  background: var(--primary);
+  color: var(--primary-contrast);
+  border-color: var(--primary);
+}
+.link-copy.copied {
+  background: var(--success);
+  color: white;
+  border-color: var(--success);
+}
+.copy-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+code {
+  font-size: 12px;
 }
 .btn.sm {
   padding: 6px 12px;
