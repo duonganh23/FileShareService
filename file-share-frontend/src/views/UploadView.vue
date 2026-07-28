@@ -168,8 +168,7 @@ function humanSize(bytes) {
         placeholder="Enter passphrase"
       />
       <p v-if="passwordEnabled" class="hint muted">
-        ⚠️ Requires backend support (password field on FileRecord + 401 gate) — not yet
-        wired to the API.
+        Enter a Password
       </p>
     </aside>
   </div>
