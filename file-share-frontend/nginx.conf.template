@@ -10,8 +10,8 @@ server {
     }
 
     location /api {
-        resolver [fd12::10] valid=30s;
-        set $backend_url http://just-endurance.railway.internal:8080;
+        resolver ${RESOLVER};
+        set $backend_url ${BACKEND_URL};
         proxy_pass $backend_url;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

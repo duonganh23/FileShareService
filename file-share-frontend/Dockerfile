@@ -17,7 +17,10 @@ RUN npm run build
 FROM nginx:stable-alpine AS production-stage
 
 COPY --from=build-stage /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+
+ENV RESOLVER="127.0.0.11"
+ENV BACKEND_URL="http://api:8080"
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
