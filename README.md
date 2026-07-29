@@ -8,7 +8,7 @@
 
 A modern, end-to-end encrypted file sharing service built with **ASP.NET Core**, **Vue 3**, and **PostgreSQL**. Upload files, get a short shareable link, and set expiry/download limits. Anyone with the link can view images inline or download files — no account required.
 
-**Live demo:** [👉 ADD YOUR RENDER DEPLOYMENT URL HERE 👈]
+**Live demo:** https://web1.up.railway.app
 
 ---
 
@@ -30,8 +30,9 @@ A modern, end-to-end encrypted file sharing service built with **ASP.NET Core**,
 - **Real-time upload progress bar**: animated 0–100% during file transfer.
 - **Multi-stage Docker build**: optimized `node:alpine` → `nginx:alpine` frontend image.
 - **Automated CI/CD**: GitHub Actions automatically lints, builds, and pushes to Docker Hub on every push to `master`.
-- **Password-protected files (UI)**: modal prompts for passphrase *(Backend integration pending)*.
-- **Image thumbnails (UI)**: placeholder for server-generated thumbnails *(Backend integration pending)*.
+- **Password-protected files**: secure passphrase protection with safe handling (no password in URLs).
+- **Download limit warnings**: warning banners when approaching limit, live badge showing remaining downloads.
+- **Enhanced copy-to-clipboard**: interactive button with visual feedback (📋 → ✓).
 
 ---
 
@@ -134,7 +135,7 @@ The `.github/workflows/ci-cd.yml` pipeline is triggered on every push to the `ma
 3. Packages both into multi-stage Docker containers.
 4. Pushes the images to Docker Hub.
 
-### Production Deployment (Render)
+### Production Deployment (Railway)
 1. **Database:** Provision a PostgreSQL instance.
 2. **Backend Web Service:** Deployed via Docker image. Requires the `ConnectionStrings__DefaultConnection` environment variable.
 3. **Frontend Static Site / Web Service:** Deployed via Docker image. Requires the `VITE_API_BASE_URL` environment variable pointing to the deployed backend.
@@ -161,6 +162,23 @@ FileShareService/
 ├── docker-compose.yml                # Local container orchestration
 └── README.md
 ```
+
+---
+
+## 🔒 Security & Recent Fixes
+
+### Password Protection 
+- ✅ Passwords **never exposed in URLs** — uses secure `Authorization` header for API calls
+- ✅ Image downloads use blob loading to prevent password in `<img src>` attributes
+- ✅ Both upload and download endpoints support optional password protection
+- **Backend requirement:** implement password hashing, validation, and return 401 on incorrect password
+
+### Bug Fixes (Latest Release)
+- ✅ **Fixed 1 MB upload limit** → now supports up to 100 MB
+- ✅ **Fixed nginx template substitution** → Dockerfile now runs `envsubst` at startup
+- ✅ **Fixed password-in-URL vulnerability** → switched to secure header-based authentication
+- ✅ **Added UX warnings** → banner alerts when downloads/expiry near limit
+- ✅ **Enhanced copy button** → visual feedback on clipboard copy
 
 ---
 

@@ -42,7 +42,11 @@ async function upload() {
   try {
     const data = await filesApi.upload(
       selectedFile.value,
-      { maxDownloads: Number(maxDownloads.value) || 0, expiresAt: computeExpiresAt() },
+      {
+        maxDownloads: Number(maxDownloads.value) || 0,
+        expiresAt: computeExpiresAt(),
+        password: passwordEnabled.value ? password.value : null,
+      },
       (evt) => {
         if (evt.total) progress.value = (evt.loaded / evt.total) * 100
       },
