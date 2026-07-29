@@ -33,11 +33,17 @@ export const filesApi = {
         return data
     },
 
-  /** Absolute URL of the raw download/preview stream (for <img src> or an <a> href). */
-    downloadUrl(code, password = null) {
-        const url = `${baseURL}/files/${code}`
-        return password ? `${url}?password=${encodeURIComponent(password)}` : url
-    },
+  /** Download file as blob (for password-protected files or to avoid exposing password in URLs). */
+  async downloadBlob(code, password = null) {
+    const config = password ? { headers: { Authorization: `Bearer ${password}` } } : {}
+    const { data } = await http.get(`/files/${code}`, { ...config, responseType: 'blob' })
+    return data
+  },
+
+  /** Absolute URL of the raw download/preview stream (for <img src> or plain <a> href, no password). */
+  downloadUrl(code) {
+    return `${baseURL}/files/${code}`
+  },
 
   /** Delete a file by code. */
   async remove(code) {

@@ -17,7 +17,8 @@
     const enteredPassword = ref(null)
 
     const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
-    const downloadUrl = computed(() => filesApi.downloadUrl(code, enteredPassword.value))
+    const downloadUrl = computed(() => filesApi.downloadUrl(code))
+    const imageObjectUrl = ref(null)
     const downloadsRemaining = computed(() => {
         if (!meta.value || meta.value.maxDownloads === 0) return null
         return meta.value.maxDownloads - meta.value.downloadCount
@@ -60,6 +61,10 @@
             meta.value = await filesApi.getInfo(code, password)
             needsPassword.value = false
             enteredPassword.value = password
+            // For images, load via blob to avoid exposing password in URL
+            if (isImage.value) {
+                await loadImage()
+            }
         } catch (e) {
             errorMessage.value = e?.response?.status === 401
                 ? 'Incorrect password.'
@@ -82,6 +87,15 @@
         if (bytes < 1024) return `${bytes} B`
         if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
         return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+    }
+
+    async function loadImage() {
+        try {
+            const blob = await filesApi.downloadBlob(code, enteredPassword.value)
+            imageObjectUrl.value = URL.createObjectURL(blob)
+        } catch (e) {
+            errorMessage.value = 'Failed to load image.'
+        }
     }
 
     onMounted(load)
@@ -131,7 +145,7 @@
       </div>
 
       <div v-if="isImage" class="preview">
-        <img :src="downloadUrl" :alt="meta.originalFileName" />
+        <img :src="imageObjectUrl || downloadUrl" :alt="meta.originalFileName" />
       </div>
       <div v-else class="file-icon">
         <div class="big">📦</div>
