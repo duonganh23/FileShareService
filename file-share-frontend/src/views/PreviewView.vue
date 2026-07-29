@@ -16,8 +16,8 @@
     const needsPassword = ref(false) // Distinction: shown on HTTP 401
     const enteredPassword = ref(null)
 
-    const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
-    const downloadUrl = computed(() => filesApi.downloadUrl(code))
+const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
+    const downloadUrl = computed(() => filesApi.downloadUrl(code, enteredPassword.value))
     const imageObjectUrl = ref(null)
     const downloadsRemaining = computed(() => {
         if (!meta.value || meta.value.maxDownloads === 0) return null
