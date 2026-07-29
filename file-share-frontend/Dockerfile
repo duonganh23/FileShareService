@@ -23,4 +23,4 @@ ENV BACKEND_URL="http://api:8080"
 RUN apk add --no-cache gettext
 
 EXPOSE 80
-CMD ["sh", "-c", "envsubst < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "envsubst '$$RESOLVER $$BACKEND_URL' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
