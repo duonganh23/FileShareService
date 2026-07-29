@@ -56,6 +56,8 @@ jobs:
           context: ./file-share-frontend
           file: ./file-share-frontend/Dockerfile
           push: true
+          build-args: |
+            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-web:latest
 
   deploy:
