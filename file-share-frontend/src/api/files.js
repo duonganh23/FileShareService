@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || ''
+const baseURL = import.meta.env.VITE_API_BASE_URL || '/api'
 
 const http = axios.create({ baseURL })
 
@@ -34,15 +34,16 @@ export const filesApi = {
     },
 
   /** Download file as blob (for password-protected files or to avoid exposing password in URLs). */
-  async downloadBlob(code, password = null) {
-    const config = password ? { headers: { Authorization: `Bearer ${password}` } } : {}
-    const { data } = await http.get(`/files/${code}`, { ...config, responseType: 'blob' })
-    return data
-  },
+    async downloadBlob(code, password = null) {
+        const params = password ? { password } : {}
+        const { data } = await http.get(`/files/${code}`, { params, responseType: 'blob' })
+        return data
+    },
 
   /** Absolute URL of the raw download/preview stream (for <img src> or plain <a> href, no password). */
-  downloadUrl(code) {
-    return `${baseURL}/files/${code}`
+  downloadUrl(code, password = null) {
+    const url = `${baseURL}/files/${code}`
+    return password ? `${url}?password=${encodeURIComponent(password)}` : url
   },
 
   /** Delete a file by code. */
