@@ -58,22 +58,22 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-web:latest
 
-  #deploy:
-    #needs: build-and-push
-    #runs-on: ubuntu-latest
-    #steps:
-     # - name: Check out repository
-     #   uses: actions/checkout@v3
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-     # - name: Install Railway CLI
-     #   run: npm install -g @railway/cli
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
 
-     # - name: Deploy Backend to Railway
-     #   run: railway up --service just-endurance --detach
-     #   env:
-     #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Deploy Backend to Railway
+        run: railway up --service just-endurance --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-     # - name: Deploy Frontend to Railway
-     #   run: railway up --service diplomatic-gentleness --detach
-      #  env:
-     #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Deploy Frontend to Railway
+        run: railway up --service diplomatic-gentleness --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
