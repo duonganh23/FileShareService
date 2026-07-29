@@ -59,12 +59,3 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-frontend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-frontend:${{ github.sha }}
-
-  deploy:
-    name: Deploy to PaaS
-    needs: build
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Render deploy
-        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}"
