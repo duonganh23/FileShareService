@@ -1,8 +1,10 @@
 {
-  "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
+    "compilerOptions": {
+        "paths": {
+            "@/*": [ "./src/*" ]
+        },
+        "checkJs": false,
+        "allowJs": true
+    },
   "exclude": ["node_modules", "dist"]
 }
