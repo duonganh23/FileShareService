@@ -12,9 +12,9 @@ A modern, end-to-end encrypted file sharing service built with **ASP.NET Core**,
 
 ---
 
-## 🎯 Features & Grading Criteria
+##  Features & Grading Criteria
 
-### ✅ Core Functionality 
+###  Core Functionality 
 - **Drag-and-drop upload** with fallback file picker.
 - **10 MB file size limit** enforced client-side.
 - **Short unique share codes** (8-char hex, e.g., `/f/a1b2c3d4`).
@@ -26,7 +26,7 @@ A modern, end-to-end encrypted file sharing service built with **ASP.NET Core**,
 - **RESTful API**: proper HTTP status codes (200, 404, 410 Gone for expired).
 - **Responsive design**: fully functional on mobile, tablet, and desktop.
 
-### 🌟 Advanced Features 
+###  Advanced Features 
 - **Real-time upload progress bar**: animated 0–100% during file transfer.
 - **Multi-stage Docker build**: optimized `node:alpine` → `nginx:alpine` frontend image.
 - **Automated CI/CD**: GitHub Actions automatically lints, builds, and pushes to Docker Hub on every push to `master`.
@@ -36,7 +36,7 @@ A modern, end-to-end encrypted file sharing service built with **ASP.NET Core**,
 
 ---
 
-## 🏗 Architecture
+##  Architecture
 
 ```text
 ┌─────────────────────────────────────────────────────┐
@@ -67,7 +67,7 @@ A modern, end-to-end encrypted file sharing service built with **ASP.NET Core**,
 
 ---
 
-## 🚀 Setup & Local Development
+##  Setup & Local Development
 
 ### Prerequisites
 - **Node.js 22+**
@@ -126,7 +126,7 @@ npm run dev
 
 ---
 
-## 🚢 CI/CD & Deployment
+##  CI/CD & Deployment
 
 ### Continuous Integration (GitHub Actions)
 The `.github/workflows/ci-cd.yml` pipeline is triggered on every push to the `master` branch. It performs the following:
@@ -142,7 +142,7 @@ The `.github/workflows/ci-cd.yml` pipeline is triggered on every push to the `ma
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```text
 FileShareService/
@@ -165,7 +165,7 @@ FileShareService/
 
 ---
 
-## 🔒 Security & Recent Fixes
+##  Security & Recent Fixes
 
 ### Password Protection 
 - ✅ Passwords **never exposed in URLs** — uses secure `Authorization` header for API calls
@@ -182,17 +182,17 @@ FileShareService/
 
 ---
 
-## 👥 Team & Assignment Context
+##  Team & Assignment Context
 
 **Course:** AMD201 — Advanced .NET Development  
 **Topic:** File & Image Sharing Service (Topic 03)  
 
 **Contributors:**
 - Nguyễn Dương Anh - 001438469
-- [👉 ADD TEAM MEMBER 2 NAME / STUDENT ID 👈]
-- [👉 ADD TEAM MEMBER 3 NAME / STUDENT ID 👈]
+- Chu Gia Thịnh - 001438987 
+- Nguyễn Tuấn Dũng - 001438623
 
 ---
 
-## ⚖️ License
+##  License
 Distributed under the MIT License.
