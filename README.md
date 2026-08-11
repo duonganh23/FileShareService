@@ -190,7 +190,6 @@ FileShareService/
 **Contributors:**
 - Nguyễn Dương Anh - 001438469
 - Chu Gia Thịnh - 001438987 
-- Nguyễn Tuấn Dũng - 001438623
 
 ---
 
