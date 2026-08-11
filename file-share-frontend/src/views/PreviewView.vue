@@ -87,21 +87,6 @@ const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
         }
     }
 
-    async function handleDownload() {
-        // Start the download
-        const link = document.createElement('a')
-        link.href = downloadUrl.value
-        link.download = meta.value.originalFileName
-        link.click()
-
-        // Refresh metadata after download to update download count
-        try {
-            await load()
-        } catch (e) {
-            // Silently fail — download still completed
-        }
-    }
-
     async function remove() {
         if (!confirm('Delete this file permanently?')) return
         try {
@@ -126,6 +111,20 @@ const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
         } catch (e) {
             errorMessage.value = 'Failed to load image.'
         }
+    }
+
+    async function handleDownload() {
+        // Trigger the actual file download
+        const blob = await filesApi.downloadBlob(code, enteredPassword.value)
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = meta.value.originalFileName
+        a.click()
+        URL.revokeObjectURL(url)
+
+        // Refresh metadata so downloadCount/canDownload reflect reality
+        meta.value = await filesApi.getInfo(code, enteredPassword.value)
     }
 
     onMounted(load)
