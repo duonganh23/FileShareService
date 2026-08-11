@@ -24,6 +24,21 @@ const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
         return meta.value.maxDownloads - meta.value.downloadCount
     })
     const isLimitWarning = computed(() => downloadsRemaining.value !== null && downloadsRemaining.value <= 1)
+    const canDownload = computed(() => {
+        // Can download if:
+        // 1. No download limit set (maxDownloads = 0), OR
+        // 2. Downloads remaining > 0
+        if (!meta.value) return false
+        if (meta.value.maxDownloads === 0) return true
+        return downloadsRemaining.value > 0
+    })
+    const downloadDisabledReason = computed(() => {
+        if (!meta.value) return ''
+        if (meta.value.maxDownloads > 0 && downloadsRemaining.value === 0) {
+            return 'Download limit reached'
+        }
+        return ''
+    })
     const isExpiringSoon = computed(() => {
         if (!meta.value?.expiresAt) return false
         const now = Date.now()
@@ -152,8 +167,28 @@ const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
         <p class="muted">Preview not available for this file type.</p>
       </div>
 
+      <!-- Download limit reached banner -->
+      <div v-if="!canDownload" class="banner error">
+        ❌ Download limit reached. This link can no longer be used.
+      </div>
+
       <div class="actions">
-        <a :href="downloadUrl" class="btn" download>⬇ Download</a>
+        <a
+          v-if="canDownload"
+          :href="downloadUrl"
+          class="btn"
+          download
+        >
+          ⬇ Download
+        </a>
+        <button
+          v-else
+          class="btn btn-disabled"
+          disabled
+          :title="downloadDisabledReason"
+        >
+          ⬇ Download (Limit Reached)
+        </button>
         <button class="btn btn-danger" @click="remove">Delete File</button>
       </div>
     </div>
@@ -172,6 +207,11 @@ const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
   background: #fef3c7;
   color: #92400e;
   border: 1px solid #fcd34d;
+}
+.banner.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
 }
 .badge-row {
   display: flex;
@@ -227,5 +267,13 @@ const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
 }
 .actions .btn {
   text-decoration: none;
+}
+.btn-disabled {
+  background: #d1d5db !important;
+  color: #6b7280 !important;
+  cursor: not-allowed !important;
+}
+.btn-disabled:hover {
+  opacity: 1 !important;
 }
 </style>
