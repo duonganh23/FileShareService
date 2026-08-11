@@ -60,17 +60,6 @@ jobs:
             VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/fileshare-web:latest
 
-  deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Deploy Frontend to Railway
-        run: railway up --service fileshare-web --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+  # Deploy to Railway
+  # Note: Configure Railway to auto-redeploy when Docker image updates
+  # See: https://docs.railway.app/deploy/deployments#automatic-deployments
