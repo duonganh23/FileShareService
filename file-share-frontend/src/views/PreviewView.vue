@@ -112,6 +112,19 @@ const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
             errorMessage.value = 'Failed to load image.'
         }
     }
+    async function handleDownload() {
+        // Trigger the actual file download
+        const blob = await filesApi.downloadBlob(code, enteredPassword.value)
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = meta.value.originalFileName
+        a.click()
+        URL.revokeObjectURL(url)
+
+        // Refresh metadata so downloadCount/canDownload reflect reality
+        meta.value = await filesApi.getInfo(code, enteredPassword.value)
+    }
 
     onMounted(load)
 </script>
@@ -173,14 +186,9 @@ const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
       </div>
 
       <div class="actions">
-        <a
-          v-if="canDownload"
-          :href="downloadUrl"
-          class="btn"
-          download
-        >
-          ⬇ Download
-        </a>
+          <button v-if="canDownload" class="btn" @click="handleDownload">
+              ⬇ Download
+          </button>
         <button
           v-else
           class="btn btn-disabled"
