@@ -21,7 +21,7 @@ namespace FileShareService.Controllers
         private readonly PasswordHasher<FileRecord> _passwordHasher = new();
         // POST api/files — upload a file
         [HttpPost]
-        public async Task<IActionResult> Upload(IFormFile file, int maxDownloads = 0, string? expiresAt = null, string? password = null)
+        public async Task<IActionResult> Upload(IFormFile file, [FromForm] int maxDownloads = 0, [FromForm] string? expiresAt = null, [FromForm] string? password = null)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file provided.");
