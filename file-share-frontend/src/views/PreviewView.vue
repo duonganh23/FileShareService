@@ -87,6 +87,21 @@ const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
         }
     }
 
+    async function handleDownload() {
+        // Start the download
+        const link = document.createElement('a')
+        link.href = downloadUrl.value
+        link.download = meta.value.originalFileName
+        link.click()
+
+        // Refresh metadata after download to update download count
+        try {
+            await load()
+        } catch (e) {
+            // Silently fail — download still completed
+        }
+    }
+
     async function remove() {
         if (!confirm('Delete this file permanently?')) return
         try {
@@ -173,14 +188,13 @@ const isImage = computed(() => meta.value?.mimeType?.startsWith('image/'))
       </div>
 
       <div class="actions">
-        <a
+        <button
           v-if="canDownload"
-          :href="downloadUrl"
+          @click="handleDownload"
           class="btn"
-          download
         >
           ⬇ Download
-        </a>
+        </button>
         <button
           v-else
           class="btn btn-disabled"
